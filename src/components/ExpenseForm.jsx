@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Other'];
+const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Drink', 'Cigarettes', 'Other'];
 
 export default function ExpenseForm({ initial, onSave, onCancel }) {
   const [amount, setAmount] = useState(initial?.amount || '');
