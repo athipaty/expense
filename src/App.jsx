@@ -27,20 +27,30 @@ export default function App() {
   const [showBillsManager, setShowBillsManager] = useState(false);
   const [tab, setTab] = useState("overview"); // overview | expenses | income
 
+  useEffect(() => {
+    const loadAll = async () => {
+      const [expRes, incRes, billRes] = await Promise.all([
+        getExpenses(month, year),
+        getIncome(month, year),
+        getFixedBills(month, year),
+      ]);
+      setExpenses(expRes.data);
+      setIncome(incRes.data);
+      setBills(billRes.data);
+    };
+    loadAll();
+  }, [month, year]);
+
   const loadAll = async () => {
     const [expRes, incRes, billRes] = await Promise.all([
       getExpenses(month, year),
       getIncome(month, year),
-      getFixedBills(),
+      getFixedBills(month, year),
     ]);
     setExpenses(expRes.data);
     setIncome(incRes.data);
     setBills(billRes.data);
   };
-
-  useEffect(() => {
-    loadAll();
-  }, [month, year]);
 
   const totalIncome = income.reduce((s, i) => s + i.amount, 0);
   const monthNames = [
@@ -265,6 +275,8 @@ export default function App() {
       {showBillsManager && (
         <BillsManager
           bills={bills}
+          month={month}
+          year={year}
           onRefresh={loadAll}
           onClose={() => setShowBillsManager(false)}
         />

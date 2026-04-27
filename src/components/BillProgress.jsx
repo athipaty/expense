@@ -1,18 +1,22 @@
 const BillProgress = ({ bills, available }) => {
-  console.log('BillProgress received available:', available); // 👈 add this
-  let remaining = Math.max(isNaN(available) ? 0 : available, 0);
+  const safeAvailable = isNaN(available) ? 0 : Math.max(available, 0);
 
-  const billsWithProgress = bills.map((bill) => {
-    if (remaining <= 0) {
-      return { ...bill, paid: 0, percent: 0, done: false };
-    }
-    const paid = Math.min(remaining, bill.amount);
-    remaining -= paid;
-    const percent = Math.round((paid / bill.amount) * 100);
-    return { ...bill, paid, percent, done: percent >= 100 };
-  });
-
-  const freeMoney = Math.max(remaining, 0);
+  const { billsWithProgress, freeMoney } = bills.reduce(
+    (acc, bill) => {
+      const paid = Math.min(Math.max(acc.remaining - 0, 0), bill.amount);
+      const remaining = acc.remaining - paid;
+      const percent = Math.round((paid / bill.amount) * 100);
+      return {
+        remaining,
+        freeMoney: remaining,
+        billsWithProgress: [
+          ...acc.billsWithProgress,
+          { ...bill, paid, percent, done: percent >= 100 },
+        ],
+      };
+    },
+    { remaining: safeAvailable, freeMoney: safeAvailable, billsWithProgress: [] }
+  );
 
   return (
     <div className="space-y-4 mb-6">
@@ -50,7 +54,7 @@ const BillProgress = ({ bills, available }) => {
           <p className="text-xs text-gray-500 mt-1 text-right">{bill.percent}%</p>
         </div>
       ))}
-      {/* Free Money */}
+
       <div className="bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-lg">💚</span>
