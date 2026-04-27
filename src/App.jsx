@@ -1,122 +1,104 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState, useEffect } from 'react';
+import Dashboard from './components/Dashboard';
+import ExpenseForm from './components/ExpenseForm';
+import ExpenseList from './components/ExpenseList';
+import { getExpenses, createExpense, updateExpense, deleteExpense } from './api/expenses';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(now.getFullYear());
+  const [expenses, setExpenses] = useState([]);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const load = async () => {
+    const res = await getExpenses(month, year);
+    setExpenses(res.data);
+  };
+
+  useEffect(() => { load(); }, [month, year]);
+
+  const handleSave = async (data) => {
+    if (editingExpense) {
+      await updateExpense(editingExpense._id, data);
+    } else {
+      await createExpense(data);
+    }
+    setEditingExpense(null);
+    setShowForm(false);
+    load();
+  };
+
+  const handleEdit = (expense) => {
+    setEditingExpense(expense);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Delete this expense?')) {
+      await deleteExpense(id);
+      load();
+    }
+  };
+
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+    <div className="min-h-screen bg-gray-950 text-white px-4 py-6 max-w-xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">💸 My Expenses</h1>
+          <p className="text-gray-400 text-sm mt-0.5">Personal tracker</p>
         </div>
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => { setEditingExpense(null); setShowForm(true); }}
+          className="bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition"
         >
-          Count is {count}
+          + Add
         </button>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
+      {/* Month Selector */}
+      <div className="flex items-center gap-2 mb-6">
+        <button
+          onClick={() => {
+            if (month === 1) { setMonth(12); setYear(y => y - 1); }
+            else setMonth(m => m - 1);
+          }}
+          className="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm"
+        >←</button>
+        <span className="flex-1 text-center font-semibold text-gray-200">
+          {monthNames[month - 1]} {year}
+        </span>
+        <button
+          onClick={() => {
+            if (month === 12) { setMonth(1); setYear(y => y + 1); }
+            else setMonth(m => m + 1);
+          }}
+          className="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-lg text-sm"
+        >→</button>
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* Dashboard */}
+      <Dashboard expenses={expenses} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* List */}
+      <ExpenseList
+        expenses={expenses}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      {/* Form Modal */}
+      {showForm && (
+        <ExpenseForm
+          initial={editingExpense}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditingExpense(null); }}
+        />
+      )}
+    </div>
+  );
 }
-
-export default App
