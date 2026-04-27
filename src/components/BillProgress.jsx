@@ -50,7 +50,6 @@ const BillProgress = ({ bills, available }) => {
           <p className="text-xs text-gray-500 mt-1 text-right">{bill.percent}%</p>
         </div>
       ))}
-BillProgress 
       {/* Free Money */}
       <div className="bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">

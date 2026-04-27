@@ -68,7 +68,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-4 py-6 max-w-xl mx-auto">
+    <div className="min-h-screen bg-gray-950 text-white px-4 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
