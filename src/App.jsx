@@ -82,7 +82,7 @@ export default function App() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">💸 My Expenses</h1>
+          <h1 className="text-2xl font-bold tracking-tight">💸 Hi, TingTong</h1>
           <p className="text-gray-400 text-sm mt-0.5">Personal tracker</p>
         </div>
         <button
