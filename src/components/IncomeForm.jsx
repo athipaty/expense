@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
-export default function IncomeForm({ onSave, onCancel }) {
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+export default function IncomeForm({ onSave, onCancel, initial }) {
+  const [amount, setAmount] = useState(initial ? String(initial.amount) : '');
+  const [note, setNote] = useState(initial?.note || '');
+  const [date, setDate] = useState(
+    initial ? new Date(initial.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
+  );
 
   const handleSubmit = () => {
     if (!amount) return alert('Please enter an amount');
@@ -13,7 +15,9 @@ export default function IncomeForm({ onSave, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/70 flex items-end justify-center z-50">
       <div className="bg-gray-900 w-full max-w-xl rounded-t-3xl p-6 space-y-4">
-        <h2 className="text-lg font-bold text-emerald-400">+ Add Income</h2>
+        <h2 className="text-lg font-bold text-emerald-400">
+          {initial ? '✏️ Edit Income' : '+ Add Income'}
+        </h2>
 
         <div>
           <label className="text-xs text-gray-400 mb-1 block">Amount (฿)</label>
@@ -58,7 +62,7 @@ export default function IncomeForm({ onSave, onCancel }) {
             onClick={handleSubmit}
             className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white py-3 rounded-xl font-semibold transition"
           >
-            Save
+            {initial ? 'Update' : 'Save'}
           </button>
         </div>
       </div>

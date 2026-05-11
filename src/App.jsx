@@ -11,7 +11,7 @@ import {
   updateExpense,
   deleteExpense,
 } from "./api/expenses";
-import { getIncome, createIncome, deleteIncome } from "./api/income";
+import { getIncome, createIncome, updateIncome, deleteIncome } from "./api/income";
 import { getFixedBills } from "./api/fixedBills";
 
 export default function App() {
@@ -25,6 +25,7 @@ export default function App() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [showBillsManager, setShowBillsManager] = useState(false);
+  const [editingIncome, setEditingIncome] = useState(null);
   const [tab, setTab] = useState("overview"); // overview | expenses | income
 
   useEffect(() => {
@@ -131,7 +132,7 @@ export default function App() {
           </p>
         </div>
         <button
-          onClick={() => setShowIncomeForm(true)}
+          onClick={() => { setEditingIncome(null); setShowIncomeForm(true); }}
           className="bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition"
         >
           + Income
@@ -202,7 +203,7 @@ export default function App() {
         <div className="space-y-3">
           <div className="flex justify-end mb-2">
             <button
-              onClick={() => setShowIncomeForm(true)}
+              onClick={() => { setEditingIncome(null); setShowIncomeForm(true); }}
               className="bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition"
             >
               + Add Income
@@ -227,17 +228,28 @@ export default function App() {
                   {new Date(inc.date).toLocaleDateString("en-GB")}
                 </p>
               </div>
-              <button
-                onClick={async () => {
-                  if (confirm("Delete this income?")) {
-                    await deleteIncome(inc._id);
-                    loadAll();
-                  }
-                }}
-                className="text-gray-500 hover:text-red-400 text-sm"
-              >
-                🗑️
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setEditingIncome(inc);
+                    setShowIncomeForm(true);
+                  }}
+                  className="text-gray-500 hover:text-emerald-400 text-sm"
+                >
+                  ✏️
+                </button>
+                <button
+                  onClick={async () => {
+                    if (confirm("Delete this income?")) {
+                      await deleteIncome(inc._id);
+                      loadAll();
+                    }
+                  }}
+                  className="text-gray-500 hover:text-red-400 text-sm"
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -263,12 +275,18 @@ export default function App() {
 
       {showIncomeForm && (
         <IncomeForm
+          initial={editingIncome}
           onSave={async (data) => {
-            await createIncome(data);
+            if (editingIncome) await updateIncome(editingIncome._id, data);
+            else await createIncome(data);
+            setEditingIncome(null);
             setShowIncomeForm(false);
             loadAll();
           }}
-          onCancel={() => setShowIncomeForm(false)}
+          onCancel={() => {
+            setShowIncomeForm(false);
+            setEditingIncome(null);
+          }}
         />
       )}
 
