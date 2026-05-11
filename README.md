@@ -1,4 +1,15 @@
-# React + Vite
+# Expense App 💰
+
+> ✅ Updated by AI assistant - test commit
+
+This is a React + Vite expense tracking application.
+
+## Features
+- Track expenses, income, and fixed bills
+- Dashboard overview
+- Bill progress tracking
+
+## Setup
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
