@@ -1,13 +1,6 @@
-# Expense App 💰
-
-> ✅ Updated by AI assistant - test commit
+# Expense App
 
 This is a React + Vite expense tracking application.
-
-## Features
-- Track expenses, income, and fixed bills
-- Dashboard overview
-- Bill progress tracking
 
 ## Setup
 
