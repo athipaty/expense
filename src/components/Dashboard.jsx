@@ -23,7 +23,7 @@ export default function Dashboard({ expenses }) {
     amount: expenses
       .filter((e) => e.category === cat)
       .reduce((s, e) => s + e.amount, 0),
-  }));
+  })).sort((a, b) => b.amount - a.amount);
 
   return (
     <div className="bg-gray-900 rounded-2xl p-5 mb-6">
