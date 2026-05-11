@@ -3,7 +3,7 @@ const BillProgress = ({ bills, available }) => {
 
   const { billsWithProgress, freeMoney } = bills.reduce(
     (acc, bill) => {
-      const paid = Math.min(Math.max(acc.remaining - 0, 0), bill.amount);
+      const paid = Math.min(Math.max(acc.remaining, 0), bill.amount);
       const remaining = acc.remaining - paid;
       const percent = Math.round((paid / bill.amount) * 100);
       return {
@@ -19,48 +19,61 @@ const BillProgress = ({ bills, available }) => {
   );
 
   return (
-    <div className="space-y-4 mb-6">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+    <div className="mb-4">
+      <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2">
         Fixed Bills
-      </h2>
+      </p>
 
       {billsWithProgress.length === 0 && (
-        <p className="text-gray-600 text-sm">No fixed bills yet</p>
+        <div className="bg-gray-900 rounded-3xl p-6 text-center mb-3">
+          <p className="text-3xl mb-2">📋</p>
+          <p className="text-gray-500 text-sm">No fixed bills yet</p>
+        </div>
       )}
 
-      {billsWithProgress.map((bill) => (
-        <div key={bill._id} className="bg-gray-900 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              {bill.done ? (
-                <span className="text-lg">✅</span>
-              ) : (
-                <span className="text-lg">🔴</span>
-              )}
-              <span className="font-medium text-sm">{bill.name}</span>
+      <div className="space-y-3">
+        {billsWithProgress.map((bill) => (
+          <div key={bill._id} className="bg-gray-900 rounded-3xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm ${
+                  bill.done ? "bg-emerald-900/50" : "bg-orange-900/40"
+                }`}>
+                  {bill.done ? "✅" : "🔴"}
+                </div>
+                <span className="font-semibold text-sm text-white">{bill.name}</span>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-500">
+                  ฿{bill.paid.toLocaleString()} / ฿{bill.amount.toLocaleString()}
+                </p>
+                <p className={`text-xs font-bold ${bill.done ? "text-emerald-400" : "text-orange-400"}`}>
+                  {bill.percent}%
+                </p>
+              </div>
             </div>
-            <span className="text-sm text-gray-400">
-              ฿{bill.paid.toLocaleString()} / ฿{bill.amount.toLocaleString()}
-            </span>
+            <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+              <div
+                className={`h-2 rounded-full transition-all duration-700 ${
+                  bill.done ? "bg-emerald-500" : "bg-orange-400"
+                }`}
+                style={{ width: `${bill.percent}%` }}
+              />
+            </div>
           </div>
-          <div className="w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
-            <div
-              className={`h-2.5 rounded-full transition-all duration-700 ${
-                bill.done ? 'bg-emerald-500' : 'bg-orange-400'
-              }`}
-              style={{ width: `${bill.percent}%` }}
-            />
-          </div>
-          <p className="text-xs text-gray-500 mt-1 text-right">{bill.percent}%</p>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      <div className="bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">💚</span>
-          <span className="text-sm font-medium text-emerald-300">Free Money</span>
+      {/* Free Money */}
+      <div className="bg-emerald-950/60 border border-emerald-800/50 rounded-3xl p-4 flex items-center justify-between mt-3 mb-2">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 bg-emerald-900/50 rounded-xl flex items-center justify-center text-lg">💚</div>
+          <div>
+            <p className="text-xs text-emerald-400 font-medium">Free Money</p>
+            <p className="text-xs text-gray-500">After all bills</p>
+          </div>
         </div>
-        <span className="text-emerald-400 font-bold">฿{freeMoney.toLocaleString()}</span>
+        <p className="text-emerald-400 font-bold text-lg">฿{freeMoney.toLocaleString()}</p>
       </div>
     </div>
   );
