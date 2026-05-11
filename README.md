@@ -1,4 +1,8 @@
-# React + Vite
+# Expense App
+
+This is a React + Vite expense tracking application.
+
+## Setup
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

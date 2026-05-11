@@ -7,13 +7,7 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
 
   const handleAdd = async () => {
     if (!name || !amount) return alert('Fill in both fields');
-    await createFixedBill({ 
-      name, 
-      amount: Number(amount), 
-      month, 
-      year,
-      order: bills.length 
-    });
+    await createFixedBill({ name, amount: Number(amount), month, year, order: bills.length });
     setName('');
     setAmount('');
     onRefresh();
@@ -27,16 +21,36 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
   };
 
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const total = bills.reduce((s, b) => s + b.amount, 0);
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-end justify-center z-50">
-      <div className="bg-gray-900 w-full max-w-xl rounded-t-3xl p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/75 flex items-end justify-center z-50" onClick={onClose}>
+      <div
+        className="bg-gray-900 w-full max-w-lg rounded-t-3xl p-6 space-y-4 max-h-[85vh] flex flex-col pb-10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Handle bar */}
+        <div className="w-10 h-1 bg-gray-700 rounded-full mx-auto -mt-2" />
+
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">
-            📋 Bills — {monthNames[month - 1]} {year}
-          </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+          <div>
+            <h2 className="text-lg font-bold text-white">📋 Fixed Bills</h2>
+            <p className="text-xs text-gray-500 mt-0.5">{monthNames[month - 1]} {year}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 bg-gray-800 active:bg-gray-700 rounded-xl flex items-center justify-center text-gray-400"
+          >✕</button>
         </div>
+
+        {/* Total */}
+        {bills.length > 0 && (
+          <div className="bg-gray-800 rounded-2xl px-4 py-3 flex justify-between items-center">
+            <p className="text-sm text-gray-400">Total bills</p>
+            <p className="text-sm font-bold text-white">฿{total.toLocaleString()}</p>
+          </div>
+        )}
 
         {/* Add new bill */}
         <div className="flex gap-2">
@@ -45,44 +59,47 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Bill name"
-            className="flex-1 bg-gray-800 rounded-xl px-3 py-2 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 bg-gray-800 rounded-xl px-4 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-600"
           />
           <input
             type="number"
+            inputMode="numeric"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="฿"
-            className="w-24 bg-gray-800 rounded-xl px-3 py-2 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-24 bg-gray-800 rounded-xl px-3 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-600"
           />
           <button
             onClick={handleAdd}
-            className="bg-emerald-500 hover:bg-emerald-400 text-white px-4 rounded-xl text-sm font-semibold transition"
+            className="bg-emerald-500 active:bg-emerald-400 text-white px-4 rounded-xl text-sm font-bold"
           >
             Add
           </button>
         </div>
 
         {/* Bill list */}
-        <div className="space-y-2">
+        <div className="overflow-y-auto space-y-2 flex-1">
+          {bills.length === 0 && (
+            <div className="text-center py-10">
+              <p className="text-3xl mb-2">📋</p>
+              <p className="text-gray-500 text-sm">No bills for {monthNames[month - 1]} {year}</p>
+            </div>
+          )}
           {bills.map((bill) => (
-            <div key={bill._id} className="bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">{bill.name}</p>
-                <p className="text-xs text-gray-400">฿{bill.amount.toLocaleString()} / month</p>
+            <div key={bill._id} className="bg-gray-800 rounded-2xl px-4 py-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-gray-700 rounded-xl flex items-center justify-center text-base">📄</div>
+                <div>
+                  <p className="text-sm font-semibold text-white">{bill.name}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">฿{bill.amount.toLocaleString()} / month</p>
+                </div>
               </div>
               <button
                 onClick={() => handleDelete(bill._id)}
-                className="text-gray-500 hover:text-red-400 text-sm"
-              >
-                🗑️
-              </button>
+                className="w-9 h-9 flex items-center justify-center text-gray-600 active:text-red-400 rounded-xl"
+              >🗑️</button>
             </div>
           ))}
-          {bills.length === 0 && (
-            <p className="text-gray-600 text-sm text-center py-4">
-              No bills for {monthNames[month - 1]} {year}
-            </p>
-          )}
         </div>
       </div>
     </div>

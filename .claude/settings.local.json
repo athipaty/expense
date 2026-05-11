@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "PowerShell(Get-ChildItem C:\\\\Users\\\\loret\\\\tong\\\\center-kitchen -Recurse -File | Where-Object { $_.Name -match \"income\" } | Select-Object FullName)",
-      "PowerShell(Get-Process *)"
+      "PowerShell(Get-Process *)",
+      "Bash(npm run *)"
     ]
   }
 }
