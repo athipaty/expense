@@ -1,16 +1,34 @@
 import { useState } from 'react';
-import { createFixedBill, deleteFixedBill } from '../api/fixedBills';
+import { createFixedBill, updateFixedBill, deleteFixedBill } from '../api/fixedBills';
 
 export default function BillsManager({ bills, month, year, onRefresh, onClose }) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
+  const [editingBill, setEditingBill] = useState(null);
 
-  const handleAdd = async () => {
+  const handleSubmit = async () => {
     if (!name || !amount) return alert('Fill in both fields');
-    await createFixedBill({ name, amount: Number(amount), month, year, order: bills.length });
+    if (editingBill) {
+      await updateFixedBill(editingBill._id, { name, amount: Number(amount) });
+    } else {
+      await createFixedBill({ name, amount: Number(amount), month, year, order: bills.length });
+    }
     setName('');
     setAmount('');
+    setEditingBill(null);
     onRefresh();
+  };
+
+  const handleEdit = (bill) => {
+    setEditingBill(bill);
+    setName(bill.name);
+    setAmount(String(bill.amount));
+  };
+
+  const handleCancel = () => {
+    setEditingBill(null);
+    setName('');
+    setAmount('');
   };
 
   const handleDelete = async (id) => {
@@ -52,7 +70,10 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
           </div>
         )}
 
-        {/* Add new bill */}
+        {/* Add / Edit form */}
+        {editingBill && (
+          <p className="text-xs text-emerald-400 font-medium -mb-1">Editing: {editingBill.name}</p>
+        )}
         <div className="flex gap-2">
           <input
             type="text"
@@ -69,11 +90,17 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
             placeholder="฿"
             className="w-24 bg-gray-800 rounded-xl px-3 py-3 text-white text-sm outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-600"
           />
+          {editingBill && (
+            <button
+              onClick={handleCancel}
+              className="bg-gray-700 active:bg-gray-600 text-white px-3 rounded-xl text-sm font-bold"
+            >✕</button>
+          )}
           <button
-            onClick={handleAdd}
+            onClick={handleSubmit}
             className="bg-emerald-500 active:bg-emerald-400 text-white px-4 rounded-xl text-sm font-bold"
           >
-            Add
+            {editingBill ? 'Save' : 'Add'}
           </button>
         </div>
 
@@ -85,8 +112,13 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
               <p className="text-gray-500 text-sm">No bills for {monthNames[month - 1]} {year}</p>
             </div>
           )}
-          {bills.map((bill) => (
-            <div key={bill._id} className="bg-gray-800 rounded-2xl px-4 py-3.5 flex items-center justify-between">
+          {[...bills].sort((a, b) => b.amount - a.amount).map((bill) => (
+            <div
+              key={bill._id}
+              className={`rounded-2xl px-4 py-3.5 flex items-center justify-between transition ${
+                editingBill?._id === bill._id ? 'bg-emerald-900/30 ring-1 ring-emerald-500' : 'bg-gray-800'
+              }`}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-gray-700 rounded-xl flex items-center justify-center text-base">📄</div>
                 <div>
@@ -94,10 +126,16 @@ export default function BillsManager({ bills, month, year, onRefresh, onClose })
                   <p className="text-xs text-gray-500 mt-0.5">฿{bill.amount.toLocaleString()} / month</p>
                 </div>
               </div>
-              <button
-                onClick={() => handleDelete(bill._id)}
-                className="w-9 h-9 flex items-center justify-center text-gray-600 active:text-red-400 rounded-xl"
-              >🗑️</button>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => handleEdit(bill)}
+                  className="w-9 h-9 flex items-center justify-center text-gray-600 active:text-emerald-400 rounded-xl"
+                >✏️</button>
+                <button
+                  onClick={() => handleDelete(bill._id)}
+                  className="w-9 h-9 flex items-center justify-center text-gray-600 active:text-red-400 rounded-xl"
+                >🗑️</button>
+              </div>
             </div>
           ))}
         </div>
