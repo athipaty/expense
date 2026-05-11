@@ -28,22 +28,6 @@ function isYesterday(dateStr) {
   );
 }
 
-function formatDateLabel(dateStr) {
-  const raw = Object.values(
-    // we just need any item's date string from the group key
-    {}
-  );
-  // dateStr here is already the formatted label key, so we re-parse from it
-  const d = new Date(dateStr);
-  if (isToday(dateStr)) return "Today";
-  if (isYesterday(dateStr)) return "Yesterday";
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export default function ExpenseList({ expenses, onEdit, onDelete }) {
   if (!expenses || expenses.length === 0)
     return (
@@ -58,7 +42,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }) {
   const sorted = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const grouped = sorted.reduce((acc, e) => {
-    const key = new Date(e.date).toISOString().split("T")[0]; // YYYY-MM-DD
+    const key = new Date(e.date).toISOString().split("T")[0];
     if (!acc[key]) acc[key] = [];
     acc[key].push(e);
     return acc;
