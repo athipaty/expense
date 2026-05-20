@@ -13,11 +13,12 @@ import {
 } from "./api/expenses";
 import { getIncome, createIncome, updateIncome, deleteIncome } from "./api/income";
 import { getFixedBills } from "./api/fixedBills";
+import { nowSG } from "./utils/date";
 
 export default function App() {
-  const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year, setYear] = useState(now.getFullYear());
+  const { month: initMonth, year: initYear } = nowSG();
+  const [month, setMonth] = useState(initMonth);
+  const [year, setYear] = useState(initYear);
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
   const [bills, setBills] = useState([]);

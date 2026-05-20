@@ -7,25 +7,24 @@ const STYLES = {
   Other:      { color: "text-gray-400",   bg: "bg-gray-700/40",   border: "border-gray-700/40",   icon: "📦" },
 };
 
+const TZ = 'Asia/Singapore';
+
+function todaySGStr() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: TZ });
+}
+
+function yesterdaySGStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString('en-CA', { timeZone: TZ });
+}
+
 function isToday(dateStr) {
-  const today = new Date();
-  const d = new Date(dateStr);
-  return (
-    d.getDate() === today.getDate() &&
-    d.getMonth() === today.getMonth() &&
-    d.getFullYear() === today.getFullYear()
-  );
+  return dateStr === todaySGStr();
 }
 
 function isYesterday(dateStr) {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const d = new Date(dateStr);
-  return (
-    d.getDate() === yesterday.getDate() &&
-    d.getMonth() === yesterday.getMonth() &&
-    d.getFullYear() === yesterday.getFullYear()
-  );
+  return dateStr === yesterdaySGStr();
 }
 
 export default function ExpenseList({ expenses, onEdit, onDelete }) {

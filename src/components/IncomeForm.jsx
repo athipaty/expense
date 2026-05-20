@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { todaySG } from '../utils/date';
 
 export default function IncomeForm({ onSave, onCancel, initial }) {
   const [amount, setAmount] = useState(initial ? String(initial.amount) : '');
   const [note, setNote] = useState(initial?.note || '');
   const [date, setDate] = useState(
-    initial ? new Date(initial.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
+    initial ? initial.date.slice(0, 10) : todaySG()
   );
 
   const handleSubmit = () => {

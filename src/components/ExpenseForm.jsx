@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { todaySG } from '../utils/date';
 
 const CATEGORIES = [
   { name: 'Food',       icon: '🍜' },
@@ -14,7 +15,7 @@ export default function ExpenseForm({ initial, onSave, onCancel }) {
   const [category, setCategory] = useState(initial?.category || 'Food');
   const [note, setNote] = useState(initial?.note || '');
   const [date, setDate] = useState(
-    initial?.date ? initial.date.slice(0, 10) : new Date().toISOString().slice(0, 10)
+    initial?.date ? initial.date.slice(0, 10) : todaySG()
   );
 
   const handleSubmit = () => {
