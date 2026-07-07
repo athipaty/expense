@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createFixedBill, updateFixedBill, deleteFixedBill } from '../api/fixedBills';
 
-export default function BillsManager({ bills, month, year, onRefresh, onClose }) {
-  const [name, setName] = useState('');
-  const [amount, setAmount] = useState('');
-  const [editingBill, setEditingBill] = useState(null);
+export default function BillsManager({ bills, month, year, onRefresh, onClose, initialEditBill }) {
+  const [name, setName] = useState(initialEditBill ? initialEditBill.name : '');
+  const [amount, setAmount] = useState(initialEditBill ? String(initialEditBill.amount) : '');
+  const [editingBill, setEditingBill] = useState(initialEditBill || null);
+
+  useEffect(() => {
+    if (initialEditBill) {
+      setEditingBill(initialEditBill);
+      setName(initialEditBill.name);
+      setAmount(String(initialEditBill.amount));
+    }
+  }, [initialEditBill]);
 
   const handleSubmit = async () => {
     if (!name || !amount) return alert('Fill in both fields');

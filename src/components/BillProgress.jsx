@@ -1,7 +1,8 @@
-const BillProgress = ({ bills, available }) => {
+const BillProgress = ({ bills, available, onEdit }) => {
   const safeAvailable = isNaN(available) ? 0 : Math.max(available, 0);
+  const sortedBills = [...bills].sort((a, b) => b.amount - a.amount);
 
-  const { billsWithProgress, freeMoney } = bills.reduce(
+  const { billsWithProgress, freeMoney } = sortedBills.reduce(
     (acc, bill) => {
       const paid = Math.min(Math.max(acc.remaining, 0), bill.amount);
       const remaining = acc.remaining - paid;
@@ -43,13 +44,21 @@ const BillProgress = ({ bills, available }) => {
                 </div>
                 <span className="font-semibold text-sm text-white">{bill.name}</span>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500">
-                  ฿{bill.paid.toLocaleString()} / ฿{bill.amount.toLocaleString()}
-                </p>
-                <p className={`text-xs font-bold ${bill.done ? "text-emerald-400" : "text-orange-400"}`}>
-                  {bill.percent}%
-                </p>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">
+                    ฿{bill.paid.toLocaleString()} / ฿{bill.amount.toLocaleString()}
+                  </p>
+                  <p className={`text-xs font-bold ${bill.done ? "text-emerald-400" : "text-orange-400"}`}>
+                    {bill.percent}%
+                  </p>
+                </div>
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(bill)}
+                    className="w-8 h-8 flex items-center justify-center text-gray-600 active:text-emerald-400 rounded-lg flex-shrink-0"
+                  >✏️</button>
+                )}
               </div>
             </div>
             <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">

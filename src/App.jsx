@@ -27,6 +27,7 @@ export default function App() {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [showIncomeForm, setShowIncomeForm] = useState(false);
   const [showBillsManager, setShowBillsManager] = useState(false);
+  const [editingBill, setEditingBill] = useState(null);
   const [tab, setTab] = useState("overview");
 
   useEffect(() => {
@@ -113,7 +114,11 @@ export default function App() {
       <div className="flex-1 px-5 pb-28 overflow-y-auto">
         {tab === "overview" && (
           <>
-            <BillProgress bills={bills} available={balance} />
+            <BillProgress
+              bills={bills}
+              available={balance}
+              onEdit={(bill) => { setEditingBill(bill); setShowBillsManager(true); }}
+            />
             <Dashboard expenses={expenses} />
           </>
         )}
@@ -245,7 +250,8 @@ export default function App() {
           month={month}
           year={year}
           onRefresh={loadAll}
-          onClose={() => setShowBillsManager(false)}
+          initialEditBill={editingBill}
+          onClose={() => { setShowBillsManager(false); setEditingBill(null); }}
         />
       )}
     </div>
